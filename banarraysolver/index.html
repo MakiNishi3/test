@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Bird Array Notation Solver</title>
+</head>
+<body>
+<textarea id="input">{10, 10, 10, 10, 10}</textarea>
+<button onclick="solve()">Solve</button>
+<pre id="output"></pre>
+<script>
+function parseBirdArray(str){
+str=str.trim();
+if(!/^\{.*\}$/.test(str))throw "BirdArrayNotationError: Unexpected standard";
+let inner=str.slice(1,-1).trim();
+if(inner==="")return [];
+let parts=inner.split(",");
+let arr=[];
+for(let p of parts){
+p=p.trim();
+if(!/^-?\d+$/.test(p))throw "BirdArrayNotationError: Unexpected standard";
+arr.push(BigInt(p));
+}
+return arr;
+}
+function solve(){
+let out=document.getElementById("output");
+try{
+let arr=parseBirdArray(document.getElementById("input").value);
+let sum=0n;
+let prod=1n;
+for(let v of arr){
+sum+=v;
+prod*=v;
+}
+out.textContent=
+"Array: ["+arr.join(", ")+"]\n"+
+"Length: "+arr.length+"\n"+
+"Sum: "+sum.toString()+"\n"+
+"Product: "+prod.toString();
+}catch(e){
+out.textContent=e;
+}
+}
+</script>
+</body>
+</html>
