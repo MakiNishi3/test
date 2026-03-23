@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Converter</title>
+</head>
+<body>
+<textarea id="input" rows="6" cols="40"></textarea>
+<br>
+<button onclick="convert()">Convert</button>
+<button onclick="swap()">Swap</button>
+<button onclick="save()">Save</button>
+<br>
+<textarea id="output" rows="6" cols="40"></textarea>
+
+<script>
+function parseLIAN(t){
+    if(!t.startsWith("(") || !t.endsWith(")")) throw "LIanError: Expected a match expression sign";
+    let inner = t.slice(1,-1).split(",");
+    let arr = inner.map(x=>{
+        if(x.includes("+")) throw "LIanError: Expected a match expression sign";
+        let n = Number(x);
+        if(Number.isNaN(n)) throw "LIanError: Unexpected type NaN";
+        return n;
+    });
+    return arr;
+}
+
+function parsePSAN(t){
+    if(!t.startsWith("(") || !t.endsWith(")")) throw "PSanError: Unexpected type NaN";
+    let inner = t.slice(1,-1).split(",");
+    let arr = inner.map(x=>{
+        let v = Function("return ("+x+")")();
+        if(Number.isNaN(v)) throw "PSanError: Unexpected type NaN";
+        return v;
+    });
+    return arr;
+}
+
+function convert(){
+    let inp = document.getElementById("input").value.trim();
+    let out = "";
+    try{
+        if(inp.startsWith("(") && inp.includes("+")){
+            let r = parsePSAN(inp);
+            out = "(" + r.join(",") + ")";
+        }else{
+            let r = parseLIAN(inp);
+            out = "(" + r.join("+") + ")";
+        }
+    }catch(e){
+        out = e;
+    }
+    document.getElementById("output").value = out;
+}
+
+function swap(){
+    let i = document.getElementById("input");
+    let o = document.getElementById("output");
+    let tmp = i.value;
+    i.value = o.value;
+    o.value = tmp;
+}
+
+function save(){
+    let data = document.getElementById("output").value;
+    let blob = new Blob([data], {type:"text/plain"});
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "output.txt";
+    a.click();
+}
+</script>
+</body>
+</html>
