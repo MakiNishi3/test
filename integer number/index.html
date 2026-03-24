@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Unlimited Number Generator</title>
+</head>
+<body>
+<textarea id="input" rows="10" cols="60"></textarea>
+<button onclick="generate()">Generate</button>
+<pre id="output"></pre>
+
+<script>
+function utcError(msg){
+    const now = new Date();
+    return now.toUTCString() + " | " + msg;
+}
+
+function parseE(str){
+    if(/^e+$/.test(str)){
+        return "1" + "0".repeat(str.length);
+    }
+    return null;
+}
+
+function pow(base, exp){
+    base = BigInt(base);
+    exp = BigInt(exp);
+    let result = 1n;
+    while(exp > 0n){
+        if(exp % 2n) result *= base;
+        base *= base;
+        exp /= 2n;
+    }
+    return result.toString();
+}
+
+function tetration(base, height){
+    base = BigInt(base);
+    height = Number(height);
+    let result = base;
+    for(let i=1;i<height;i++){
+        result = BigInt(pow(base, result));
+    }
+    return result.toString();
+}
+
+function parseArrows(str){
+    let match = str.match(/^10(\^{2,5})\((\d+)\)$/);
+    if(match){
+        let arrows = match[1].length;
+        let n = parseInt(match[2]);
+        if(arrows === 2) return pow(10, n);
+        if(arrows === 3) return tetration(10, n);
+        if(arrows >= 4) return "10^^^("+n+")";
+    }
+    return null;
+}
+
+function parseBrace(str){
+    let match = str.match(/^10\{(\d+)\}10$/);
+    if(match){
+        return pow(10, match[1]);
+    }
+    return null;
+}
+
+function generate(){
+    let input = document.getElementById("input").value.trim();
+    let output = document.getElementById("output");
+
+    try{
+        if(!input) throw "Empty";
+
+        let eParsed = parseE(input);
+        if(eParsed){ output.textContent = eParsed; return; }
+
+        if(/^\d+e\d+$/.test(input)){
+            let [a,b] = input.split("e");
+            output.textContent = a + "0".repeat(parseInt(b));
+            return;
+        }
+
+        let arrow = parseArrows(input);
+        if(arrow){ output.textContent = arrow; return; }
+
+        let brace = parseBrace(input);
+        if(brace){ output.textContent = brace; return; }
+
+        if(/^\d+\^\d+$/.test(input)){
+            let [a,b] = input.split("^");
+            output.textContent = pow(a,b);
+            return;
+        }
+
+        if(/^J\d*$/.test(input)){
+            output.textContent = "J" + input.slice(1);
+            return;
+        }
+
+        throw "e";
+    }catch(err){
+        output.textContent = utcError(err);
+    }
+}
+</script>
+</body>
+</html>
