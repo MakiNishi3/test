@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Break Eternity Converter</title>
+<script src="https://github.com/Patashu/break_eternity.js/raw/refs/heads/master/break_eternity.js"></script>
+</head>
+<body>
+<textarea id="input" rows="10" cols="50">ω+10</textarea>
+<br>
+<button onclick="convert()">Convert</button>
+<br>
+<textarea id="output" rows="10" cols="50"></textarea>
+
+<script>
+function normalize(input){
+    return input
+        .replace(/ω/g,"w")
+        .replace(/ζ/g,"z")
+        .replace(/ε/g,"e")
+        .replace(/Γ/g,"g")
+        .replace(/Ω\^\+/g,"O")
+        .replace(/w\+/g,"w+")
+        .replace(/z\+/g,"z+");
+}
+
+function parseOrdinal(str){
+    try{
+        if(/Infinity/.test(str)) throw "LimitRangeError: Number exceeded the limit of range is Infinity";
+        if(/NaN/.test(str)) throw "OrdinalError: Unexpected type: NaN";
+
+        if(str.startsWith("w+")){
+            let n = str.split("+")[1] || "0";
+            return "ω + " + n;
+        }
+        if(str.startsWith("z+")){
+            let n = str.split("+")[1] || "0";
+            return "ζ + " + n;
+        }
+        if(str === "e") return "ε";
+        if(str === "g") return "Γ";
+        if(str === "O") return "Ω^+";
+
+        let d = new Decimal(str);
+        return d.toString();
+    }catch(e){
+        return e.toString();
+    }
+}
+
+function convert(){
+    let input = document.getElementById("input").value.trim();
+    let norm = normalize(input);
+    let result = parseOrdinal(norm);
+    document.getElementById("output").value = result;
+}
+</script>
+</body>
+</html>
