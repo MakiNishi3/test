@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<body>
+<textarea id="input" rows="10" cols="60"></textarea>
+<br>
+<button onclick="convert()">convert</button>
+<button onclick="swap()">swap</button>
+<button onclick="save()">save</button>
+<br>
+<textarea id="output" rows="10" cols="60"></textarea>
+
+<script>
+function isOrdinal(x){
+return /^(Ω|ω|ε|ζ)(\+((Ω|ω|ε|ζ)|\d+))*$|^Ω\+\^ω\+$/.test(x.replace(/\s/g,""));
+}
+function isMatrix(x){
+return /^(\((\".*?\"(,\".*?\")*)\))+$/s.test(x.replace(/\s/g,""));
+}
+function parseOrdinal(x){
+if(!isOrdinal(x)) throw "Error: Expected a non-standard function.";
+let parts=x.replace(/\s/g,"").split("+");
+let sum=0;
+for(let p of parts){
+if(!isNaN(p)) sum+=Number(p);
+else sum+=1000;
+}
+return "(\""+sum+"\")";
+}
+function parseMatrix(x){
+if(!isMatrix(x)) throw "Error: Unexpected type NaN";
+let nums=[];
+x.replace(/\"(.*?)\"/g,(m,v)=>{nums.push(v.length);});
+return "Ω+"+nums.reduce((a,b)=>a+b,0);
+}
+function convert(){
+let i=document.getElementById("input").value;
+let o=document.getElementById("output");
+try{
+if(isOrdinal(i)) o.value=parseOrdinal(i);
+else if(isMatrix(i)) o.value=parseMatrix(i);
+else throw "Error: Expected a non-standard function.";
+}catch(e){o.value=e;}
+}
+function swap(){
+let a=document.getElementById("input");
+let b=document.getElementById("output");
+let t=a.value;
+a.value=b.value;
+b.value=t;
+}
+function save(){
+let blob=new Blob([document.getElementById("output").value],{type:"text/plain"});
+let a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="result.txt";
+a.click();
+}
+</script>
+</body>
+</html>
