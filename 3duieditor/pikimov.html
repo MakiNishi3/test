@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="https://pikimov.com/app/assets/pikimov.js"></script>
+</head>
+<body>
+<button onclick="addObject()">Add Object</button>
+<button onclick="removeObject()">Remove Object</button>
+<select id="objectType">
+<option value="cube">cube</option>
+<option value="sphere">sphere</option>
+<option value="box">box</option>
+<option value="cylinder">cylinder</option>
+<option value="custom">custom obj file</option>
+</select>
+<input type="file" id="objFile">
+<br>
+<button onclick="addEffect()">Add Effect</button>
+<button onclick="removeEffect()">Remove Effect</button>
+<select id="effectType">
+<option>petzval lens</option>
+<option>motion tile</option>
+<option>wave warp</option>
+<option>kaleidoscope</option>
+<option>shadow</option>
+<option>glitch</option>
+<option>bloom</option>
+<option>outline</option>
+<option>invert</option>
+<option>Radial blur</option>
+<option>luma key</option>
+<option>posterize</option>
+<option>tint</option>
+<option>film grain</option>
+<option>bend</option>
+<option>skew</option>
+<option>halftone</option>
+<option>magnifying lens</option>
+<option>turbulent displace</option>
+<option>vignette</option>
+<option>typewriter</option>
+<option>mosaic</option>
+<option>noise</option>
+<option>shake</option>
+<option>leave color</option>
+<option>fluted glass</option>
+<option>cropedges</option>
+<option>Displace</option>
+<option>extrude</option>
+<option>vintage</option>
+<option>motion blur</option>
+<option>mesh glitch</option>
+<option>wiggle</option>
+<option>text wobble</option>
+<option>rotate x</option>
+<option>rotate y</option>
+<option>rotate z</option>
+</select>
+<input type="range" id="control1" min="-10" max="10" step="0.1" value="1">
+<input type="range" id="control2" min="-10" max="10" step="0.1" value="1">
+<input type="range" id="control3" min="-10" max="10" step="0.1" value="1">
+<script>
+let objects=[];
+let effects=[];
+let customModel;
+
+function setup(){
+createCanvas(window.innerWidth,window.innerHeight,WEBGL);
+}
+
+function draw(){
+background(0);
+for(let e of effects){
+applyEffect(e);
+}
+for(let o of objects){
+push();
+applyObject(o);
+pop();
+}
+}
+
+function addObject(){
+let type=document.getElementById("objectType").value;
+if(type==="custom"){
+let file=document.getElementById("objFile").files[0];
+if(file){
+let url=URL.createObjectURL(file);
+loadModel(url,true,(m)=>{customModel=m;objects.push({type:"custom",model:m});});
+}
+}else{
+objects.push({type:type});
+}
+}
+
+function removeObject(){
+objects.pop();
+}
+
+function addEffect(){
+let type=document.getElementById("effectType").value;
+effects.push({type:type});
+}
+
+function removeEffect(){
+effects.pop();
+}
+
+function applyObject(o){
+rotateX(frameCount*0.01);
+rotateY(frameCount*0.01);
+rotateZ(frameCount*0.01);
+if(o.type==="cube"){box(100);}
+if(o.type==="sphere"){sphere(60);}
+if(o.type==="box"){box(120,80,60);}
+if(o.type==="cylinder"){cylinder(60,120);}
+if(o.type==="custom"&&o.model){model(o.model);}
+}
+
+function applyEffect(e){
+let c1=parseFloat(document.getElementById("control1").value);
+let c2=parseFloat(document.getElementById("control2").value);
+let c3=parseFloat(document.getElementById("control3").value);
+
+if(e.type==="invert"){filter(INVERT);}
+if(e.type==="posterize"){filter(POSTERIZE,int(c1*5));}
+if(e.type==="threshold"){filter(THRESHOLD,c1);}
+if(e.type==="gray"){filter(GRAY);}
+if(e.type==="blur"){filter(BLUR,c1);}
+if(e.type==="noise"){noiseSeed(frameCount*c1);}
+if(e.type==="rotate x"){rotateX(c1);}
+if(e.type==="rotate y"){rotateY(c1);}
+if(e.type==="rotate z"){rotateZ(c1);}
+if(e.type==="shake"){translate(random(-c1,c1),random(-c1,c1));}
+if(e.type==="wave warp"){translate(sin(frameCount*0.1)*c1,cos(frameCount*0.1)*c1);}
+if(e.type==="kaleidoscope"){rotateZ(frameCount*0.05*c1);}
+if(e.type==="motion blur"){blendMode(ADD);}
+if(e.type==="bloom"){emissiveMaterial(255*c1);}
+if(e.type==="outline"){stroke(255*c1);}
+if(e.type==="tint"){tint(255*c1,255*c2,255*c3);}
+if(e.type==="film grain"){for(let i=0;i<100;i++){point(random(-width,width),random(-height,height));}}
+if(e.type==="vignette"){noFill();stroke(0,150);ellipse(0,0,width*c1,height*c1);}
+if(e.type==="glitch"){translate(random(-c1,c1),0);}
+if(e.type==="wiggle"){rotateZ(sin(frameCount*0.2)*c1);}
+if(e.type==="mesh glitch"){scale(1+random(-c1,c1)*0.01);}
+if(e.type==="extrude"){scale(c1);}
+if(e.type==="skew"){applyMatrix(1,c1,0,0,1,0,0,0,1);}
+if(e.type==="bend"){rotateX(sin(frameCount*0.1)*c1);}
+if(e.type==="halftone"){strokeWeight(c1);}
+if(e.type==="magnifying lens"){scale(1+c1*0.1);}
+if(e.type==="turbulent displace"){translate(noise(frameCount)*c1,noise(frameCount+10)*c1);}
+if(e.type==="mosaic"){scale(int(c1));}
+if(e.type==="typewriter"){textSize(32);text("TYPE",-50,0);}
+if(e.type==="text wobble"){rotateZ(sin(frameCount*0.2)*c1);}
+if(e.type==="vintage"){tint(255,200,150);}
+if(e.type==="leave color"){tint(255*c1,0,0);}
+if(e.type==="fluted glass"){scale(1+sin(frameCount*0.2)*c1*0.1);}
+if(e.type==="cropedges"){clip(-width/4,-height/4,width/2,height/2);}
+if(e.type==="Displace"){translate(c1,c2,c3);}
+if(e.type==="motion tile"){translate((frameCount%c1)*10,0);}
+if(e.type==="petzval lens"){scale(1/(1+c1*0.1));}
+if(e.type==="Radial blur"){rotateZ(frameCount*0.01*c1);}
+if(e.type==="luma key"){tint(255*c1);}
+if(e.type==="shadow"){translate(10,10);}
+}
+</script>
+</body>
+  </html>
