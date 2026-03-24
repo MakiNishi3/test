@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Break Eternity Converter</title>
+<script src="https://cdn.jsdelivr.net/npm/break_eternity.js"></script>
+</head>
+<body>
+<textarea id="input" rows="10" cols="50">10^20</textarea>
+<br>
+<button onclick="convert()">Convert</button>
+<br>
+<textarea id="output" rows="10" cols="50" readonly></textarea>
+
+<script>
+function parse(input) {
+    input = input.trim();
+
+    if (input.includes("^^^")) {
+        let parts = input.split("^^^");
+        if (parts.length !== 2) throw "NotationError: Cannot defined with type: NaN";
+        let base = new Decimal(parts[0]);
+        let height = new Decimal(parts[1]);
+        return base.pentate(height.toNumber());
+    }
+
+    if (input.includes("^^")) {
+        let parts = input.split("^^");
+        if (parts.length !== 2) throw "NotationError: Cannot defined with type: NaN";
+        let base = new Decimal(parts[0]);
+        let height = new Decimal(parts[1]);
+        return base.tetrate(height.toNumber());
+    }
+
+    if (input.includes("^")) {
+        let parts = input.split("^");
+        if (parts.length !== 2) throw "NotationError: Cannot defined with type: NaN";
+        let base = new Decimal(parts[0]);
+        let exp = new Decimal(parts[1]);
+        return base.pow(exp);
+    }
+
+    return new Decimal(input);
+}
+
+function convert() {
+    let input = document.getElementById("input").value;
+    let output = document.getElementById("output");
+
+    try {
+        let result = parse(input);
+
+        if (!result || isNaN(result.mag)) {
+            throw "NotationError: Cannot defined with type: NaN";
+        }
+
+        if (!isFinite(result.mag) || result.layer === Infinity) {
+            throw "LimitRangeError: Number exceeded the limit of range is Infinity";
+        }
+
+        output.value = result.toString();
+    } catch (e) {
+        output.value = e.toString();
+    }
+}
+</script>
+</body>
+  </html>
