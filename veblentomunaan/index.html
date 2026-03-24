@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Break Eternity Converter</title>
+<script src="https://cdn.jsdelivr.net/npm/break_eternity.js"></script>
+</head>
+<body>
+<textarea id="input" rows="10" cols="60">1e10</textarea>
+<br>
+<button onclick="convert()">Convert</button>
+<br>
+<textarea id="output" rows="10" cols="60" readonly></textarea>
+
+<script>
+function parseCustom(str){
+    str = str.replace(/\s+/g,'');
+
+    str = str.replace(/ω/g,'1e1000');
+    str = str.replace(/Ω/g,'1e1000000');
+    str = str.replace(/ζ/g,'1e100');
+    str = str.replace(/ε/g,'1e-100');
+
+    return str;
+}
+
+function safeDecimal(x){
+    try{
+        let d = new Decimal(x);
+        if(!isFinite(d.mag) || !isFinite(d.layer)) throw "LimitRangeError: Number exceeded the limit of range is Infinity";
+        if(isNaN(d.mag)) throw "NotationError: Cannot defined with type: NaN";
+        return d;
+    }catch(e){
+        if(typeof e === "string") throw e;
+        throw "NotationError: Cannot defined with type: NaN";
+    }
+}
+
+function evalExpr(expr){
+    expr = parseCustom(expr);
+
+    let tokens = expr.match(/(\d+(\.\d+)?e[+\-]?\d+|\d+(\.\d+)?|[+\-()])/gi);
+    if(!tokens) throw "NotationError: Cannot defined with type: NaN";
+
+    let output = [];
+    let ops = [];
+
+    function apply(){
+        let b = output.pop();
+        let a = output.pop();
+        let op = ops.pop();
+        if(op==="+") output.push(a.add(b));
+        else if(op==="-") output.push(a.sub(b));
+    }
+
+    tokens.forEach(t=>{
+        if(t==="+"||t==="-"){
+            while(ops.length) apply();
+            ops.push(t);
+        }else if(t==="("){
+            ops.push(t);
+        }else if(t===")"){
+            while(ops.length && ops[ops.length-1]!=="(") apply();
+            ops.pop();
+        }else{
+            output.push(safeDecimal(t));
+        }
+    });
+
+    while(ops.length) apply();
+
+    return output[0];
+}
+
+function convert(){
+    let input = document.getElementById("input").value;
+    let out = document.getElementById("output");
+    try{
+        let result = evalExpr(input);
+        out.value = result.toString();
+    }catch(e){
+        out.value = e;
+    }
+}
+</script>
+</body>
+</html>
