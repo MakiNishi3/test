@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Unlimited Generator</title>
+</head>
+<body>
+<textarea id="input" rows="10" cols="80"></textarea>
+<button onclick="generate()">Generate</button>
+<div id="output"></div>
+<script>
+function nowUTC() {
+  const d = new Date();
+  return d.toISOString();
+}
+function parseExp(str) {
+  try {
+    if (/^e+$/.test(str)) return "1e" + str.length;
+    if (/^10\^\^\(.+\)$/.test(str)) return "tetr(" + str.slice(5, -1) + ")";
+    if (/^10\^\^\^\(.+\)$/.test(str)) return "pent(" + str.slice(6, -1) + ")";
+    if (/^10\^\^\^\^\(.+\)$/.test(str)) return "hex(" + str.slice(7, -1) + ")";
+    if (/^10\^\^\^\^\^\(.+\)$/.test(str)) return "hept(" + str.slice(8, -1) + ")";
+    if (/^10\{.+\}10$/.test(str)) return "hyper(" + str.slice(3, -3) + ")";
+    if (/^[0-9]+(\.[0-9]+)?e[0-9]+$/i.test(str)) return Number(str).toString();
+    return eval(str).toString();
+  } catch (e) {
+    throw "Unexpected type NaN: Error at Anonymous7577.showstack";
+  }
+}
+function generate() {
+  const input = document.getElementById("input").value.trim();
+  const out = document.getElementById("output");
+  try {
+    const result = parseExp(input);
+    out.innerText = result;
+  } catch (err) {
+    out.innerText = nowUTC() + " UTC | " + Intl.DateTimeFormat().resolvedOptions().timeZone + " | " + err;
+  }
+}
+</script>
+</body>
+</html>
