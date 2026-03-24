@@ -1,0 +1,26 @@
+{
+  "name": "expand_num.js",
+  "version": "1.5.0",
+  "description": "A JavaScript library that handles arithmetic for numbers as large as {10,9e15,1,2}.",
+  "main": "ExpandNum.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MakiNishi3/test.git"
+  },
+  "keywords": [
+    "bignum",
+    "bignumber",
+    "bigdecimal",
+    "number",
+    "decimal"
+  ],
+  "author": "MakiNishi3",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MakiNishi3/test/package/ExpandNum.js"
+  },
+  "homepage": "https://github.com/MakiNishi3/test/package/ExpandNum.js"
+}
