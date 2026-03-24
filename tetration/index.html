@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Unlimited Generator</title>
+</head>
+<body>
+<textarea id="input" rows="10" cols="50">10^10</textarea>
+<button onclick="run()">Generate</button>
+<pre id="output"></pre>
+
+<script>
+function repeatArrow(base, level, count){
+    let result = base;
+    for(let i=0;i<count;i++){
+        result = {base: base, level: level, exp: result};
+    }
+    return result;
+}
+
+function format(obj){
+    if(typeof obj === "number" || typeof obj === "string") return obj;
+    return obj.base + "^".repeat(obj.level) + "(" + format(obj.exp) + ")";
+}
+
+function parse(input){
+    input = input.trim();
+
+    let match;
+
+    match = input.match(/^10\^\.repeat\((\d+)\)$/);
+    if(match){
+        let n = +match[1];
+        if(n>=1 && n<=10) return repeatArrow(10,1,n);
+    }
+
+    match = input.match(/^10\^\^\.repeat\((\d+)\)$/);
+    if(match){
+        let n = +match[1];
+        if(n>=1 && n<=10) return repeatArrow(10,2,n);
+    }
+
+    match = input.match(/^10\^\^\^\.repeat\((\d+)\)$/);
+    if(match){
+        let n = +match[1];
+        if(n>=1 && n<=10) return repeatArrow(10,3,n);
+    }
+
+    match = input.match(/^10\^(\d+)$/);
+    if(match){
+        return Math.pow(10, +match[1]);
+    }
+
+    throw new Error("e");
+}
+
+function run(){
+    const input = document.getElementById("input").value;
+    const output = document.getElementById("output");
+
+    try{
+        const result = parse(input);
+        output.textContent = format(result);
+    }catch(err){
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        output.textContent = tz + " " + err.message;
+    }
+}
+</script>
+</body>
+</html>
