@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
+</head>
+<body>
+<script>
+let objects=[];
+let effects=[];
+let gui=new dat.GUI();
+let objFolder=gui.addFolder("Objects");
+let effFolder=gui.addFolder("Effects");
+
+function setup(){
+createCanvas(window.innerWidth,window.innerHeight,WEBGL);
+}
+
+function draw(){
+background(0);
+orbitControl();
+for(let e of effects){applyEffect(e);}
+for(let o of objects){
+push();
+rotateX(o.rx);
+rotateY(o.ry);
+rotateZ(o.rz);
+drawObject(o);
+pop();
+}
+}
+
+function drawObject(o){
+if(o.type==="cube"){box(o.size);}
+if(o.type==="sphere"){sphere(o.size/2);}
+if(o.type==="box"){box(o.w,o.h,o.d);}
+if(o.type==="cylinder"){cylinder(o.r,o.h);}
+if(o.type==="custom"&&o.model){model(o.model);}
+}
+
+function applyEffect(e){
+if(e.type==="invert"){shaderEffect(255,0);}
+if(e.type==="huesaturation"){rotateY(frameCount*0.01*e.val);}
+if(e.type==="swirl"){rotateZ(frameCount*0.01*e.val);}
+if(e.type==="pinch"){scale(1+sin(frameCount*0.05)*0.2*e.val);}
+if(e.type==="bulge"){scale(1+cos(frameCount*0.05)*0.2*e.val);}
+if(e.type==="corner pin"){translate(sin(frameCount*0.05)*20*e.val,0);}
+if(e.type==="Lightness"){ambientLight(255*e.val);}
+if(e.type==="wave warp"){translate(0,sin(frameCount*0.1)*50*e.val);}
+if(e.type==="kaleidoscope"){rotateY(frameCount*0.02*e.val);}
+if(e.type==="anamorphic lens flare"){pointLight(255,255,255,0,0,200*e.val);}
+if(e.type==="lens Correction"){scale(1/(1+0.5*e.val));}
+if(e.type==="motion tile"){translate(frameCount%100*e.val,0);}
+if(e.type==="random warp"){translate(random(-10,10)*e.val,random(-10,10)*e.val);}
+}
+
+let addObj={
+type:"cube",
+add:function(){
+let o={
+type:this.type,
+size:100,
+w:100,h:100,d:100,
+r:50,
+rx:0,ry:0,rz:0,
+model:null
+};
+if(this.type==="custom"){
+let input=createFileInput(file=>{
+o.model=loadModel(file.data,true);
+});
+input.hide();
+input.elt.click();
+}
+let f=objFolder.addFolder("obj"+objects.length);
+f.add(o,"rx",0,6.28);
+f.add(o,"ry",0,6.28);
+f.add(o,"rz",0,6.28);
+objects.push(o);
+}
+};
+
+let removeObj={
+remove:function(){
+objects.pop();
+}
+};
+
+objFolder.add(addObj,"type",["cube","sphere","box","cylinder","custom"]);
+objFolder.add(addObj,"add");
+objFolder.add(removeObj,"remove");
+
+let addEff={
+type:"invert",
+add:function(){
+let e={type:this.type,val:1};
+let f=effFolder.addFolder("eff"+effects.length);
+f.add(e,"val",0,5);
+effects.push(e);
+}
+};
+
+let removeEff={
+remove:function(){
+effects.pop();
+}
+};
+
+effFolder.add(addEff,"type",["invert","huesaturation","swirl","pinch","bulge","corner pin","Lightness","wave warp","kaleidoscope","anamorphic lens flare","lens Correction","motion tile","random warp"]);
+effFolder.add(addEff,"add");
+effFolder.add(removeEff,"remove");
+</script>
+</body>
+</html>
