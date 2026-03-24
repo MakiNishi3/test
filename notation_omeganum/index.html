@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Break Eternity Converter</title>
+<script src="https://cdn.jsdelivr.net/gh/Patashu/break_eternity.js/break_eternity.js"></script>
+</head>
+<body>
+<textarea id="input" placeholder="Enter Break Eternity notation (e.g. 1e10, ee5, 10^^3, {6})"></textarea>
+<button onclick="convert()">Convert</button>
+<textarea id="output" readonly></textarea>
+<script>
+function parseSpecial(input){
+    input = input.trim();
+
+    if (/^\{[0-9]+\}$/.test(input)) {
+        let n = parseInt(input.slice(1,-1));
+        return Decimal.tetrate(10, n);
+    }
+
+    if (/^10\^{2,5}[0-9]+$/.test(input)) {
+        let arrows = input.match(/\^{2,5}/)[0].length;
+        let n = parseFloat(input.split(/\^{2,5}/)[1]);
+        if (arrows === 2) return Decimal.tetrate(10, n);
+        if (arrows === 3) return Decimal.pentate(10, n);
+        if (arrows === 4) return Decimal.iteratedexp(10, n);
+        if (arrows === 5) return Decimal.iteratedexp(10, n).tetrate(10,2);
+    }
+
+    if (/^e+/.test(input)) {
+        let count = input.match(/^e+/)[0].length;
+        let rest = input.slice(count);
+        let x = new Decimal(rest || 1);
+        for(let i=0;i<count;i++){
+            x = Decimal.pow(10, x);
+        }
+        return x;
+    }
+
+    return new Decimal(input);
+}
+
+function convert(){
+    let input = document.getElementById("input").value;
+    let output = document.getElementById("output");
+
+    try{
+        let d = parseSpecial(input);
+
+        if (!d || isNaN(d.mag)) {
+            throw new Error("NotationError: Cannot defined with type: NaN");
+        }
+
+        if (!isFinite(d.mag) || d.layer === Infinity) {
+            throw new Error("LimitRangeError: Number exceeded the limit of range is Infinity");
+        }
+
+        output.value = d.toString();
+    }catch(e){
+        output.value = e.message;
+    }
+}
+</script>
+</body>
+</html>
