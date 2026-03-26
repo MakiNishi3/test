@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Break Reality Notation Converter</title>
+<script src="https://github.com/MakiNishi3/BreakReality.js/raw/refs/heads/main/BreakReality.js"></script>
+</head>
+<body>
+<h1>Break Reality Notation Converter</h1>
+<textarea id="input" placeholder="Enter Break Reality notation (e.g., 1e10)"></textarea>
+<br>
+<button id="convert">Convert</button>
+<div id="output"></div>
+<script>
+document.getElementById('convert').addEventListener('click', () => {
+    const input = document.getElementById('input').value.trim();
+    let output = '';
+    try {
+        output = BreakReality.parse(input).toString();
+    } catch (err) {
+        if (err instanceof BreakReality.NotationError) output = 'NotationError: Cannot defined with type: NaN';
+        else if (err instanceof BreakReality.LimitRangeError) output = 'LimitRangeError: Number exceeded the limit of range is Infinity';
+        else output = err.toString();
+    }
+    document.getElementById('output').textContent = output;
+});
+</script>
+</body>
+</html>
