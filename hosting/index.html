@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="https://fonts.cdnfonts.com/css/pixeleum-48" rel="stylesheet">
+<meta charset="UTF-8">
+<title>Hosting - Free file hosting and sharing</title>
+<style>
+body{background:gray;color:black;font-family:'Pixeleum 48',monospace}
+button,input{font-family:'Pixeleum 48',monospace}
+</style>
+</head>
+<body>
+
+  <h1>Point to the File and sharing</h1>
+<input type="file" id="fileInput">
+<button onclick="upload()">Upload</button>
+<p>No signups, ads, data collection, errors, and shady stuff</p>
+<p>Max file size is 1024GB</p>
+<div id="list"></div>
+
+<script>
+const maxSize=1099511627776;
+
+function upload(){
+const files=document.getElementById("fileInput").files;
+for(let i=0;i<files.length;i++){
+if(files[i].size>maxSize){continue;}
+const url=URL.createObjectURL(files[i]);
+const container=document.createElement("div");
+
+const name=document.createElement("span");
+name.textContent=files[i].name+" ";
+
+const link=document.createElement("input");
+link.value=url;
+link.style.width="300px";
+
+const copy=document.createElement("button");
+copy.textContent="Copy";
+copy.onclick=function(){
+link.select();
+document.execCommand("copy");
+};
+
+container.appendChild(name);
+container.appendChild(link);
+container.appendChild(copy);
+
+document.getElementById("list").appendChild(container);
+}
+}
+</script>
+
+</body>
+</html>
