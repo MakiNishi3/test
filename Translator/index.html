@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Translator</title>
+</head>
+<body>
+<textarea id="input" rows="10" cols="50">This Is My Translator</textarea>
+<br>
+<select id="target">
+<option value="ja">Japanese (Kanji)</option>
+<option value="ja-Latn">Japanese (Latin)</option>
+<option value="zh">Chinese (Kanji)</option>
+<option value="zh-Latn">Chinese (Latin)</option>
+<option value="ko">Korean (Hangul)</option>
+<option value="ko-Latn">Korean (Latin)</option>
+</select>
+<button onclick="translateText()">Translate</button>
+<br>
+<textarea id="output" rows="10" cols="50"></textarea>
+
+<script>
+async function translateText(){
+let text=document.getElementById("input").value;
+let target=document.getElementById("target").value;
+let url="https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl="+target+"&dt=t&q="+encodeURIComponent(text);
+let res=await fetch(url);
+let data=await res.json();
+let out="";
+for(let i=0;i<data[0].length;i++){out+=data[0][i][0];}
+document.getElementById("output").value=out;
+}
+</script>
+</body>
+</html>
