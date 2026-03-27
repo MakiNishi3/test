@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>This Is My Translator</title>
+</head>
+<body>
+<textarea id="input"></textarea>
+<select id="from"></select>
+<select id="to"></select>
+<button onclick="translateText()">Translate</button>
+<textarea id="output"></textarea>
+
+<script>
+const languages = [
+"Abenaki","Abkhaz","Afar","Afrikaans","Akan","Albanian","Amharic","Arabic","Aragonese","Armenian","Assamese","Avar","Avestan","Aymara","Azerbaijani",
+"Bambara","Bashkir","Basque","Belarusian","Bengali","Bihari","Bislama","Bosnian","Breton","Bulgarian","Burmese",
+"Catalan","Chamorro","Chechen","Chichewa","Chinese","Chuvash","Cornish","Corsican","Cree","Croatian","Czech",
+"Danish","Divehi","Dutch","Dzongkha",
+"English","Esperanto","Estonian","Ewe",
+"Faroese","Fijian","Finnish","French","Fula",
+"Galician","Georgian","German","Greek","Guarani","Gujarati",
+"Haitian","Hausa","Hebrew","Herero","Hindi","Hiri Motu","Hungarian",
+"Icelandic","Ido","Igbo","Indonesian","Interlingua","Interlingue","Inuktitut","Inupiaq","Irish","Italian",
+"Japanese","Javanese",
+"Kalaallisut","Kannada","Kanuri","Kashmiri","Kazakh","Khmer","Kikuyu","Kinyarwanda","Kirghiz","Komi","Kongo","Korean","Kurdish",
+"Lao","Latin","Latvian","Limburgish","Lingala","Lithuanian","Luba-Katanga","Luxembourgish",
+"Macedonian","Malagasy","Malay","Malayalam","Maltese","Manx","Maori","Marathi","Marshallese","Mongolian",
+"Nauru","Navajo","Ndonga","Nepali","North Ndebele","Northern Sami","Norwegian",
+"Occitan","Ojibwe","Oriya","Oromo","Ossetian",
+"Pali","Pashto","Persian","Polish","Portuguese","Punjabi",
+"Quechua",
+"Romanian","Romansh","Russian",
+"Samoan","Sango","Sanskrit","Scottish Gaelic","Serbian","Shona","Sindhi","Sinhala","Slovak","Slovenian","Somali","Southern Ndebele","Spanish","Sundanese","Swahili","Swati","Swedish",
+"Tagalog","Tahitian","Tajik","Tamil","Tatar","Telugu","Thai","Tibetan","Tigrinya","Tonga","Tsonga","Tswana","Turkish","Turkmen",
+"Uighur","Ukrainian","Urdu","Uzbek",
+"Venda","Vietnamese",
+"Walloon","Welsh","Wolof",
+"Xhosa",
+"Yiddish","Yoruba",
+"Zulu"
+];
+
+const fromSelect = document.getElementById("from");
+const toSelect = document.getElementById("to");
+
+languages.forEach(lang => {
+  let opt1 = document.createElement("option");
+  let opt2 = document.createElement("option");
+  opt1.value = opt2.value = lang;
+  opt1.textContent = opt2.textContent = lang;
+  fromSelect.appendChild(opt1);
+  toSelect.appendChild(opt2);
+});
+
+async function translateText(){
+  const text = document.getElementById("input").value;
+  const from = fromSelect.value;
+  const to = toSelect.value;
+
+  const res = await fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + encodeURIComponent(to) + "&dt=t&q=" + encodeURIComponent(text));
+  const data = await res.json();
+  document.getElementById("output").value = data[0].map(x => x[0]).join("");
+}
+</script>
+</body>
+</html>
