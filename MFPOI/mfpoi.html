@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Download Numbers</title>
+</head>
+<body>
+<button onclick="download()">Download 0 to 1000000</button>
+<script>
+function download(){
+let text="";
+for(let i=0;i<=2000;i++){
+text+=i+"\n";
+}
+let blob=new Blob([text],{type:"text/plain"});
+let a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="MFPOI_Seasons_1-2.txt";
+a.click();
+}
+</script>
+</body>
+</html>
